@@ -1,0 +1,45 @@
+{
+  "name": "crab",
+  "version": "1.0.0",
+  "description": "CRAB web server: sequence- and structure-aware RBP motif scan",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bioinformatics-torvergata/CRAB.git"
+  },
+  "keywords": [
+    "crab",
+    "RBP",
+    "RNA",
+    "secondary",
+    "structure"
+  ],
+  "author": "Bioinformatics Group, University of Rome Tor Vergata",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/bioinformatics-torvergata/CRAB/issues"
+  },
+  "homepage": "https://github.com/bioinformatics-torvergata/CRAB#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "bootstrap": "^4.4.1",
+    "ejs": "^3.0.1",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.4.0",
+    "express-static": "^1.2.6",
+    "express-validator": "^6.4.0",
+    "jquery": "^3.5.0",
+    "multer": "^1.4.2",
+    "path": "^0.12.7",
+    "popper.js": "^1.16.1",
+    "sanitize": "^2.1.0",
+    "uuid": "^7.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}

@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# User job outputs (never commit: third-party data)
+public/results/
+results/
+
+# Large data distributed via Zenodo (see README)
+motifs_str_groups/
+motifs_nuc_groups/
+public/PFMs/
+public/images/
+public/download/
+
+# Secrets
+.env
+
+# Binaries (install ViennaRNA instead)
+scripts/RNAfold
+
+# Python / editors / backups
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*_bck
+*_old
+*.log
+.DS_Store

@@ -1,0 +1,309 @@
+<%- include ("partials/header.ejs") %>
+
+<style>
+  /* ---- tutto lo stile e' incapsulato sotto #briodb: non tocca navbar/footer/Bootstrap ---- */
+  #briodb{
+    --indigo:#4f46e5; --indigo-700:#4338ca; --indigo-050:#eef2ff;
+    --seq:#10b981; --seq-bg:#e6fbf3; --seq-bd:#a7f3d0;
+    --str:#f43f5e; --str-bg:#fff1f2; --str-bd:#fecaca;
+    --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --panel:#f8fafc; --card:#ffffff;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    max-width:1180px;margin:0 auto;padding:0 20px 20px;
+    font-family:var(--sans);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  #briodb *,#briodb *::before,#briodb *::after{box-sizing:border-box}
+  #briodb a{color:var(--indigo);text-decoration:none}
+  #briodb a:hover{text-decoration:underline}
+
+  /* hero / search */
+  #briodb .hero{padding:36px 0 24px}
+  #briodb .hero h1{font-size:clamp(26px,4vw,40px);letter-spacing:-1px;margin:0 0 6px;font-weight:800}
+  #briodb .hero p{margin:0 0 22px;color:var(--muted);font-size:15px;max-width:60ch}
+  #briodb .searchbox{position:relative;max-width:560px}
+  #briodb .searchbox input{
+    width:100%;font-size:17px;padding:15px 16px 15px 46px;border:2px solid var(--line);
+    border-radius:12px;outline:none;transition:border-color .15s, box-shadow .15s;background:#fff;font-family:inherit;color:var(--ink)
+  }
+  #briodb .searchbox input:focus{border-color:var(--indigo);box-shadow:0 0 0 4px var(--indigo-050)}
+  #briodb .searchbox svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted)}
+  #briodb .stat{margin-top:12px;font-size:13px;color:var(--muted)}
+  #briodb .stat b{color:var(--ink)}
+
+  /* autocomplete dropdown */
+  #briodb .ac{position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);
+    border-radius:12px;box-shadow:0 12px 30px -12px rgba(15,23,42,.25);max-height:320px;overflow:auto;z-index:15;display:none}
+  #briodb .ac.open{display:block}
+  #briodb .ac-item{padding:10px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;gap:10px}
+  #briodb .ac-item:hover,#briodb .ac-item.active{background:var(--indigo-050)}
+  #briodb .ac-item .nm{font-weight:600}
+  #briodb .ac-item .ct{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  /* A–Z browse */
+  #briodb .browse{padding:8px 0 60px}
+  #briodb .az-nav{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 24px;padding:12px 0;border-bottom:1px solid var(--line)}
+  #briodb .az-nav a{font-size:13px;font-weight:600;color:var(--muted);padding:4px 8px;border-radius:6px}
+  #briodb .az-nav a:hover{background:var(--indigo-050);color:var(--indigo);text-decoration:none}
+  #briodb .az-group{margin-bottom:20px;scroll-margin-top:90px}
+  #briodb .az-letter{font-size:13px;font-weight:800;color:var(--indigo);letter-spacing:.1em;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:12px}
+  #briodb .chips{display:flex;flex-wrap:wrap;gap:8px}
+  #briodb .chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 13px;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-family:inherit;transition:border-color .12s,background .12s}
+  #briodb .chip:hover{border-color:var(--indigo);background:var(--indigo-050)}
+  #briodb .chip .n{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  /* RBP result */
+  #briodb .result{padding:20px 0 70px;display:none}
+  #briodb .rhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:20px}
+  #briodb .rhead .name{font-size:32px;font-weight:800;letter-spacing:-.5px;margin:0;display:flex;align-items:baseline;gap:12px}
+  #briodb .rhead .entry{font-size:14px;color:var(--muted);font-weight:600}
+  #briodb .rhead .sub{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px}
+  #briodb .pill{font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid var(--line);color:var(--muted);background:var(--panel)}
+  #briodb .pill.seq{color:var(--seq);background:var(--seq-bg);border-color:var(--seq-bd)}
+  #briodb .pill.str{color:var(--str);background:var(--str-bg);border-color:var(--str-bd)}
+  #briodb .back{font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);background:none;border:none;padding:6px 0;font-family:inherit}
+  #briodb .back:hover{color:var(--indigo)}
+
+  /* filters */
+  #briodb .filters{display:flex;flex-wrap:wrap;gap:18px;align-items:center;margin-bottom:20px}
+  #briodb .fgroup{display:flex;align-items:center;gap:6px}
+  #briodb .fgroup label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  #briodb .fgroup select{font-family:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+
+  /* motif grid */
+  #briodb .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  #briodb .mcard{border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden;display:flex;flex-direction:column;transition:transform .12s ease,box-shadow .12s ease}
+  #briodb .mcard:hover{transform:translateY(-3px);box-shadow:0 14px 28px -18px rgba(15,23,42,.35)}
+  #briodb .logo{height:110px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#fbfcff,#f1f5f9);border-bottom:1px solid var(--line);padding:10px}
+  #briodb .logo img{max-height:90px;max-width:100%}
+  #briodb .mbody{padding:14px 15px 15px}
+  #briodb .mtop{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+  #briodb .badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.03em}
+  #briodb .badge.seq{color:var(--seq);background:var(--seq-bg);border:1px solid var(--seq-bd)}
+  #briodb .badge.str{color:var(--str);background:var(--str-bg);border:1px solid var(--str-bd)}
+  #briodb .tech{font-size:11px;font-weight:700;color:var(--muted);background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:20px}
+  #briodb .meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin:2px 0 10px}
+  #briodb .meta .k{color:#94a3b8}
+  #briodb .meta .v{color:var(--ink);font-weight:600}
+  #briodb .mid{font-family:var(--mono);font-size:11px;color:#94a3b8;word-break:break-all;border-top:1px dashed var(--line);padding-top:9px;margin-top:2px}
+  #briodb .mlinks{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  #briodb .mlinks a{font-size:12px;font-weight:600;border:1px solid var(--line);border-radius:8px;padding:4px 10px;color:var(--indigo)}
+  #briodb .mlinks a:hover{background:var(--indigo-050);text-decoration:none}
+  #briodb .excl{font-size:11px;color:var(--str);font-weight:600;margin-top:8px}
+
+  #briodb .empty{padding:60px 0;text-align:center;color:var(--muted)}
+  #briodb .empty svg{color:#cbd5e1;margin-bottom:12px}
+
+  @media(prefers-reduced-motion:reduce){#briodb *{transition:none!important}}
+  @media(max-width:560px){#briodb .hero{padding:24px 0 16px}#briodb .rhead .name{font-size:24px}}
+</style>
+
+<div id="briodb">
+  <section class="hero">
+    <h1>Which RNA-binding protein?</h1>
+    <p>Type a protein name to see every sequence and structure motif linked to it across the CRAB catalog — with logos, experiment source, region, and organism.</p>
+    <div class="searchbox">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <input id="q" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. HNRNPA1, FMR1, PUM2…" aria-label="Search RNA-binding protein">
+      <div class="ac" id="ac" role="listbox"></div>
+    </div>
+    <div class="stat" id="stat"></div>
+  </section>
+
+  <section class="browse" id="browse"></section>
+
+  <section class="result" id="result">
+    <button class="back" id="back">← All proteins</button>
+    <div class="rhead" id="rhead"></div>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+</div>
+
+<script>
+// tutto in una IIFE: nessuna variabile globale, nessun conflitto con jQuery/Bootstrap del sito
+(function(){
+// ============================================================================
+// CONFIG — usa path ASSOLUTI, cosi' funzionano qualunque sia l'URL della pagina
+// ============================================================================
+const JSON_URL  = "/brio-db/rbp_index.json";   // dove servi rbp_index.json (assoluto!)
+const LOGO_BASE = "";                           // "" se logo_url nel JSON e' gia' assoluto/completo
+// ============================================================================
+
+let DATA = null, RBP_BY_NAME = {}, acItems = [], acIdx = -1, CUR = null;
+let FILTERS = {type:"all", org:"all", tech:"all"};
+const root = document.getElementById("briodb");
+const $ = s => root.querySelector(s);
+
+async function boot(){
+  try{
+    const res = await fetch(JSON_URL, {cache:"no-store"});
+    if(!res.ok) throw new Error(res.status);
+    DATA = await res.json();
+  }catch(e){
+    DATA = SAMPLE_DATA;   // fallback dimostrativo se il JSON non e' raggiungibile
+    console.warn("rbp_index.json non raggiungibile — uso dati di esempio.", e);
+  }
+  DATA.rbps.forEach(r => RBP_BY_NAME[r.rbp.toUpperCase()] = r);
+  $("#stat").innerHTML = `<b>${DATA.meta.total_rbps}</b> proteins · <b>${DATA.meta.total_motifs}</b> motifs indexed`;
+  renderBrowse();
+  wireSearch();
+  const p = new URLSearchParams(location.search).get("rbp");
+  if(p && RBP_BY_NAME[p.toUpperCase()]) showRBP(RBP_BY_NAME[p.toUpperCase()]);
+}
+
+function renderBrowse(){
+  const groups = {};
+  DATA.rbps.forEach(r=>{ const L=r.rbp[0].toUpperCase(); (groups[L] ||= []).push(r); });
+  const letters = Object.keys(groups).sort();
+  let html = `<nav class="az-nav">` + letters.map(L=>`<a href="#az-${L}">${L}</a>`).join("") + `</nav>`;
+  letters.forEach(L=>{
+    html += `<div class="az-group" id="az-${L}"><div class="az-letter">${L}</div><div class="chips">`;
+    groups[L].forEach(r=>{ html += `<button class="chip" data-rbp="${enc(r.rbp)}">${esc(r.rbp)}<span class="n">${r.n_motifs}</span></button>`; });
+    html += `</div></div>`;
+  });
+  $("#browse").innerHTML = html;
+  $("#browse").querySelectorAll(".chip").forEach(c=>{
+    c.addEventListener("click",()=>showRBP(RBP_BY_NAME[c.dataset.rbp.toUpperCase()]));
+  });
+}
+
+function wireSearch(){
+  const q = $("#q"), ac = $("#ac");
+  q.addEventListener("input",()=>{
+    const v = q.value.trim().toUpperCase();
+    if(!v){ closeAc(); return; }
+    acItems = DATA.rbps.filter(r=>r.rbp.toUpperCase().includes(v))
+                       .sort((a,b)=>{ const as=a.rbp.toUpperCase().startsWith(v), bs=b.rbp.toUpperCase().startsWith(v);
+                                      return as===bs ? b.n_motifs-a.n_motifs : (as?-1:1); }).slice(0,10);
+    acIdx = -1;
+    if(!acItems.length){ ac.innerHTML=`<div class="ac-item"><span class="nm">No protein matches “${esc(q.value)}”</span></div>`; ac.classList.add("open"); return; }
+    ac.innerHTML = acItems.map((r,i)=>`<div class="ac-item" data-i="${i}" role="option"><span class="nm">${esc(r.rbp)}</span><span class="ct">${r.n_motifs} motifs</span></div>`).join("");
+    ac.classList.add("open");
+    ac.querySelectorAll(".ac-item").forEach(el=>{ if(el.dataset.i!==undefined) el.addEventListener("click",()=>pick(acItems[+el.dataset.i])); });
+  });
+  q.addEventListener("keydown",e=>{
+    if(!ac.classList.contains("open")) return;
+    if(e.key==="ArrowDown"){e.preventDefault();acIdx=Math.min(acIdx+1,acItems.length-1);hi();}
+    else if(e.key==="ArrowUp"){e.preventDefault();acIdx=Math.max(acIdx-1,0);hi();}
+    else if(e.key==="Enter"){e.preventDefault();if(acItems[acIdx])pick(acItems[acIdx]);else if(acItems.length===1)pick(acItems[0]);}
+    else if(e.key==="Escape"){closeAc();}
+  });
+  document.addEventListener("click",e=>{ if(!e.target.closest("#briodb .searchbox")) closeAc(); });
+  $("#back").addEventListener("click",backToBrowse);
+}
+function hi(){ $("#ac").querySelectorAll(".ac-item").forEach((el,i)=>el.classList.toggle("active",i===acIdx)); }
+function closeAc(){ $("#ac").classList.remove("open"); acIdx=-1; }
+function pick(r){ $("#q").value=r.rbp; closeAc(); showRBP(r); }
+
+function showRBP(r){
+  if(!r) return;
+  CUR = r; FILTERS = {type:"all", org:"all", tech:"all"};
+  $("#browse").style.display="none";
+  root.querySelector(".hero").style.display="none";
+  $("#result").style.display="block";
+  history.replaceState(null,"",`?rbp=${enc(r.rbp)}`);
+  window.scrollTo({top:0});
+
+  const link = r.uniprot_url ? ` <a href="${esc(r.uniprot_url)}" target="_blank" rel="noopener">UniProt ↗</a>` : "";
+  const entry = r.entry_name ? `<span class="entry">${esc(r.entry_name)}</span>` : "";
+  $("#rhead").innerHTML = `
+    <div>
+      <h2 class="name">${esc(r.rbp)} ${entry}</h2>
+      <div class="sub">
+        <span class="pill seq">${r.n_sequence} sequence</span>
+        <span class="pill str">${r.n_structure} structure</span>
+        <span class="pill">${r.techniques.map(esc).join(" · ")}</span>
+        <span class="pill">${r.organisms.map(esc).join(" · ")}</span>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--muted)">${r.n_motifs} motif${r.n_motifs>1?"s":""} total${link}</div>`;
+
+  buildFilters(r);
+  renderGrid();
+}
+
+function buildFilters(r){
+  const orgs = ["all", ...r.organisms], techs = ["all", ...r.techniques];
+  const opt = (arr,cur,lbl)=>arr.map(v=>`<option value="${esc(v)}" ${v===cur?"selected":""}>${v==="all"?lbl:esc(v)}</option>`).join("");
+  $("#filters").innerHTML = `
+    <div class="fgroup"><label>Type</label><select id="fType">
+      <option value="all">All</option><option value="Sequence">Sequence</option><option value="Structure">Structure</option>
+    </select></div>
+    <div class="fgroup"><label>Organism</label><select id="fOrg">${opt(orgs,"all","All")}</select></div>
+    <div class="fgroup"><label>Experiment</label><select id="fTech">${opt(techs,"all","All")}</select></div>`;
+  $("#fType").onchange=e=>{FILTERS.type=e.target.value;renderGrid();};
+  $("#fOrg").onchange =e=>{FILTERS.org =e.target.value;renderGrid();};
+  $("#fTech").onchange=e=>{FILTERS.tech=e.target.value;renderGrid();};
+}
+
+function renderGrid(){
+  const ms = CUR.motifs.filter(m=>
+    (FILTERS.type==="all"||m.type===FILTERS.type) &&
+    (FILTERS.org ==="all"||m.organism===FILTERS.org) &&
+    (FILTERS.tech==="all"||m.technique===FILTERS.tech));
+  $("#grid").innerHTML = ms.length ? ms.map(cardHTML).join("") : `<div class="empty">No motifs match these filters.</div>`;
+}
+
+function cardHTML(m){
+  const isSeq = m.type==="Sequence", cls = isSeq?"seq":"str";
+  const logo = (LOGO_BASE?LOGO_BASE.replace(/\/$/,"")+"/":"") + (m.logo_url||m.logo||"");
+  const src = m.study||m.accession||"";
+  const links = [];
+  if(m.publication_url) links.push(`<a href="${esc(m.publication_url)}" target="_blank" rel="noopener">Publication ↗</a>`);
+  if(m.accession) links.push(`<a href="https://www.encodeproject.org/search/?searchTerm=${esc(m.accession)}" target="_blank" rel="noopener">ENCODE ↗</a>`);
+  return `<article class="mcard">
+    <div class="logo"><img alt="${esc(m.type)} logo for ${esc(m.rbp)}" src="${esc(logo)}" onerror="briodbPhLogo(this,'${cls}')"></div>
+    <div class="mbody">
+      <div class="mtop"><span class="badge ${cls}">${m.type}</span><span class="tech">${esc(m.technique)}</span></div>
+      <div class="meta">
+        <span><span class="k">Region</span> <span class="v">${esc(m.region)}</span></span>
+        <span><span class="k">Organism</span> <span class="v">${esc(m.organism)}</span></span>
+        ${src?`<span><span class="k">Source</span> <span class="v">${esc(src)}</span></span>`:""}
+        ${m.cell_line?`<span><span class="k">Cell line</span> <span class="v">${esc(m.cell_line)}</span></span>`:""}
+      </div>
+      <div class="mid">${esc(m.motif_id)}</div>
+      ${links.length?`<div class="mlinks">${links.join("")}</div>`:""}
+      ${m.excluded_from_search?`<div class="excl">Catalog-only · excluded from live search</div>`:""}
+    </div>
+  </article>`;
+}
+
+// placeholder mostrato SOLO se il PNG reale non carica (path errato o file mancante)
+window.briodbPhLogo = function(img,cls){
+  const col = cls==="seq" ? "#10b981" : "#f43f5e";
+  const letters = ["A","C","G","U"], svgL=[]; let x=6;
+  for(let i=0;i<6;i++){ const L=letters[(i*3+1)%4]; const h=18+((i*29)%34);
+    svgL.push(`<text x="${x}" y="64" font-family="monospace" font-weight="800" font-size="${h}" fill="${col}" opacity="${0.55+((i%3)*0.15)}">${L}</text>`); x+=26; }
+  img.outerHTML = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 70' width='170' height='70'>${svgL.join("")}</svg>`;
+};
+
+function backToBrowse(){
+  $("#result").style.display="none";
+  root.querySelector(".hero").style.display="block";
+  $("#browse").style.display="block";
+  history.replaceState(null,"",location.pathname);
+}
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function enc(s){return encodeURIComponent(String(s));}
+
+const SAMPLE_DATA = {
+  meta:{total_rbps:3,total_motifs:6,generated_at:"demo"},
+  rbps:[
+    {rbp:"FMR1",entry_name:"FMR1_HUMAN",uniprot_url:"https://www.uniprot.org/uniprotkb/Q06787",n_motifs:2,n_sequence:2,n_structure:0,techniques:["PARCLIP"],organisms:["Homo sapiens"],types:["Sequence"],motifs:[
+      {motif_id:"PARCLIP_FMR1_Ascano2012a_hg19_CDS_m3_run1",type:"Sequence",rbp:"FMR1",technique:"PARCLIP",accession:null,study:"Ascano2012a",genome:"hg19",organism:"Homo sapiens",region:"CDS",logo_url:"",excluded_from_search:false},
+      {motif_id:"PARCLIP_FMR1_Ascano2012c_hg19_UTR_m3_run1",type:"Sequence",rbp:"FMR1",technique:"PARCLIP",accession:null,study:"Ascano2012c",genome:"hg19",organism:"Homo sapiens",region:"UTR",logo_url:"",excluded_from_search:false}]},
+    {rbp:"HNRNPA1",entry_name:"ROA1_HUMAN",uniprot_url:"https://www.uniprot.org/uniprotkb/P09651",n_motifs:2,n_sequence:1,n_structure:1,techniques:["eCLIP"],organisms:["Homo sapiens"],types:["Sequence","Structure"],motifs:[
+      {motif_id:"ENCFF121XLA_HNRNPA1_hg19_UTR_m2_run1",type:"Sequence",rbp:"HNRNPA1",technique:"eCLIP",accession:"ENCFF121XLA",study:null,genome:"hg19",organism:"Homo sapiens",region:"UTR",logo_url:"",excluded_from_search:false},
+      {motif_id:"ENCFF121XLA_HNRNPA1_hg19_UTR_m1_run1",type:"Structure",rbp:"HNRNPA1",technique:"eCLIP",accession:"ENCFF121XLA",study:null,genome:"hg19",organism:"Homo sapiens",region:"UTR",logo_url:"",excluded_from_search:false}]},
+    {rbp:"SF3B1",n_motifs:2,n_sequence:0,n_structure:2,techniques:["eCLIP"],organisms:["Homo sapiens"],types:["Structure"],motifs:[
+      {motif_id:"ENCFF322GPD_SF3B1_hg19_UTR_m2_run2",type:"Structure",rbp:"SF3B1",technique:"eCLIP",accession:"ENCFF322GPD",study:null,genome:"hg19",organism:"Homo sapiens",region:"UTR",logo_url:"",excluded_from_search:false},
+      {motif_id:"ENCFF322GPD_SF3B1_hg19_CDS_m1_run1",type:"Structure",rbp:"SF3B1",technique:"eCLIP",accession:"ENCFF322GPD",study:null,genome:"hg19",organism:"Homo sapiens",region:"CDS",logo_url:"",excluded_from_search:false}]}
+  ]
+};
+
+boot();
+})();
+</script>
+
+<%- include ("partials/footer.ejs") %>

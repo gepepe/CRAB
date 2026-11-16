@@ -1,0 +1,10 @@
+name: crab
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - scipy
+  - viennarna=2.4.14
+  - openjdk>=8
+  - nodejs>=16

@@ -1,0 +1,106 @@
+<%- include ("partials/header.ejs") %>
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css"/>
+
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="font-weight-bold text-dark" style="letter-spacing: 0.5px;">Protein Domains</h2>
+        <p class="text-muted lead">List of unique protein domains associated with the analyzed RNA secondary structure motifs.</p>
+        <hr class="mx-auto" style="width: 60px; border-top: 3px solid #0d6efd; border-radius: 2px;">
+    </div>
+
+    <div class="card border-0 shadow-sm p-4 bg-white" style="border-radius: 12px;">
+        <div class="table-responsive">
+            <table id="example" class="table table-striped table-bordered text-dark" style="width:100%">
+                <thead class="bg-light text-secondary">
+                    <tr>
+                        <th class="font-weight-bold">Domain</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>ALBAx1</td></tr>
+                    <tr><td>ALBAx2</td></tr>
+                    <tr><td>CSD</td></tr>
+                    <tr><td>CSDx1</td></tr>
+                    <tr><td>CSDx2</td></tr>
+                    <tr><td>DRBM</td></tr>
+                    <tr><td>DRBMx1</td></tr>
+                    <tr><td>DRBMx2</td></tr>
+                    <tr><td>G-patch</td></tr>
+                    <tr><td>G-patchx1</td></tr>
+                    <tr><td>HA2</td></tr>
+                    <tr><td>HA2x1</td></tr>
+                    <tr><td>KH</td></tr>
+                    <tr><td>KHx1</td></tr>
+                    <tr><td>KHx2</td></tr>
+                    <tr><td>KHx3</td></tr>
+                    <tr><td>KHx4</td></tr>
+                    <tr><td>KHx5</td></tr>
+                    <tr><td>LSM</td></tr>
+                    <tr><td>LSMx1</td></tr>
+                    <tr><td>MIF4G</td></tr>
+                    <tr><td>MIF4Gx1</td></tr>
+                    <tr><td>PAZ</td></tr>
+                    <tr><td>PAZx1</td></tr>
+                    <tr><td>PIWI</td></tr>
+                    <tr><td>PIWIx1</td></tr>
+                    <tr><td>PUF</td></tr>
+                    <tr><td>PUFx1</td></tr>
+                    <tr><td>RBM</td></tr>
+                    <tr><td>RBMx1</td></tr>
+                    <tr><td>RBMx2</td></tr>
+                    <tr><td>RRM</td></tr>
+                    <tr><td>RRM_1</td></tr>
+                    <tr><td>RRMx1</td></tr>
+                    <tr><td>RRMx2</td></tr>
+                    <tr><td>RRMx3</td></tr>
+                    <tr><td>RRMx4</td></tr>
+                    <tr><td>RRMx6</td></tr>
+                    <tr><td>S1</td></tr>
+                    <tr><td>S1x1</td></tr>
+                    <tr><td>SAM</td></tr>
+                    <tr><td>SAMx1</td></tr>
+                    <tr><td>THUMP</td></tr>
+                    <tr><td>THUMPx1</td></tr>
+                    <tr><td>TNase-like</td></tr>
+                    <tr><td>TNase-likex1</td></tr>
+                    <tr><td>TNase-likex4</td></tr>
+                    <tr><td>TROVEx1</td></tr>
+                    <tr><td>Tudor</td></tr>
+                    <tr><td>UPF1-type</td></tr>
+                    <tr><td>Znf_CCCHx3</td></tr>
+                    <tr><td>Znf_CCCHx4</td></tr>
+                    <tr><td>Znf_CCCHx5</td></tr>
+                    <tr><td>Znf_CCHCx2</td></tr>
+                    <tr><td>Znf_RanBP2</td></tr>
+                    <tr><td>Znf_RanBP2x1</td></tr>
+                    <tr><td>Znf_RanBP2x2</td></tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Domain</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        if ($.fn.DataTable) {
+            $('#example').DataTable({
+                "pageLength": 10,
+                "lengthMenu": [10, 25, 50, 100],
+                "searching": true,
+                "ordering": true,
+                "responsive": true
+            });
+        }
+    });
+</script>
+
+<%- include ("partials/footer.ejs") %>
