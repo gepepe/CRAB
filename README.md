@@ -54,4 +54,4 @@ See [CHANGELOG.md](CHANGELOG.md) for database releases and update dates.
 
 ## License
 
-See [LICENSE](LICENSE).
+Released under the MIT License, see [LICENSE](LICENSE). Third-party components (ViennaRNA, Bootstrap, jQuery, tablesorter) are subject to their own licenses.

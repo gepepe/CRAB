@@ -19,7 +19,7 @@
     "structure"
   ],
   "author": "Bioinformatics Group, University of Rome Tor Vergata",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/bioinformatics-torvergata/CRAB/issues"
   },
