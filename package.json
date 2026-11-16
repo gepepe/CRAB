@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bioinformatics-torvergata/CRAB.git"
+    "url": "git+https://github.com/gepepe/CRAB.git"
   },
   "keywords": [
     "crab",
@@ -21,9 +21,9 @@
   "author": "Bioinformatics Group, University of Rome Tor Vergata",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bioinformatics-torvergata/CRAB/issues"
+    "url": "https://github.com/gepepe/CRAB/issues"
   },
-  "homepage": "https://github.com/bioinformatics-torvergata/CRAB#readme",
+  "homepage": "https://github.com/gepepe/CRAB#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
     "bootstrap": "^4.4.1",
