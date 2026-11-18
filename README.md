@@ -3,7 +3,7 @@
 CRAB is a web server for sequence- and structure-aware discovery of RNA-binding protein (RBP) binding motifs. RNA secondary structure is encoded with the BEAR alphabet. The motif collection is built on 1,244 CLIP datasets (POSTAR3 and GEO) covering 394 unique RBPs (422 species-specific entries) across seven model organisms. A Global Search mode provides consensus signatures that integrate all datasets available for each RBP, and CRAB-DB exposes them as a browsable catalogue.
 
 **Web server:** https://crab.bio.uniroma2.it
-**Motif database (versioned):** Zenodo DOI `[to be added]`
+**Motif database (versioned):** Zenodo DOI [10.5281/zenodo.24342594](https://doi.org/10.5281/zenodo.24342594)
 
 ## Citation
 
